@@ -1,0 +1,19 @@
+{
+  "name": "WebSCADA",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://GDZy@github.com/GDZy/WebSCADA.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GDZy/WebSCADA/issues"
+  },
+  "homepage": "https://github.com/GDZy/WebSCADA#readme"
+}
