@@ -2,30 +2,30 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectId;
+var db = require('./db');
 
 var app = express();
-var db;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var users = [
-    {
-        id: 1,
-        name: 'administrator'
-    },
-    {   
-        id: 2,
-        name: 'user1'
-    }
-];
+// var users = [
+//     {
+//         id: 1,
+//         name: 'administrator'
+//     },
+//     {   
+//         id: 2,
+//         name: 'user1'
+//     }
+// ];
 
 app.get('/', function(req, res){
     res.send('-= api app is work -=');
 });
 
-app.get('/users', function(req, res){
-    db.collection('users').find().toArray(function (err, docs) {
+app.get('/users', function(req, res) {
+    db.get().collection('users').find().toArray(function (err, docs) {
         if (err) {
             console.log(err);
             return sendStatus(500);
@@ -35,7 +35,7 @@ app.get('/users', function(req, res){
 })
 
 app.get('/users/:id', function(req, res){
-    db.collection('users').findOne( { _id: ObjectID(req.params.id) }, function (err, doc) {
+    db.get().collection('users').findOne( { _id: ObjectID(req.params.id) }, function (err, doc) {
         if (err) {
             console.log(err);
             return sendStatus(500);
@@ -49,7 +49,7 @@ app.get('/users/:id', function(req, res){
  //   res.send(user);
 })
 
-app.post('/users', function (req, res){
+app.post('/users', function (req, res) {
     var user = {
         //id: Date.now(),
         name: req.body.name
@@ -57,7 +57,7 @@ app.post('/users', function (req, res){
 
      console.log(req.body);
      
-     db.collection('users').insert(user, function (err, result) {
+     db.get().collection('users').insert(user, function (err, result) {
      
          if (err) {
             console.log(err);
@@ -69,28 +69,49 @@ app.post('/users', function (req, res){
 })
 
 app.put('/users/:id', function(req, res){
-    var user = users.find(function(user){
-        return user.id === Number(req.params.id);
-    })
-
-    user.name = req.body.name;
-
-    res.sendStatus(200);
+    console.log(req.params);
+    console.log(req.params.id);
+    console.log(req.body.name);
+    db.get().collection('users').updateOne(
+        { _id: ObjectID(req.params.id) },
+        { $set: {name: req.body.name }},
+        function (err, result) {
+            if (err) {
+                console.log(err);
+                return res.sendStatus(500);
+            }
+            res.sendStatus(200);
+        }
+    )
+    // var user = users.find(function(user){
+    //     return user.id === Number(req.params.id);
+    // })
+    // user.name = req.body.name;
+    // res.sendStatus(200);
 })
 
 app.delete('/users/:id', function(req, res){
-    users = users.filter(function(user){
-        return user.id !== Number(req.params.id);
-    })
+    db.get().collection('users').deleteOne(
+        { _id: ObjectID(req.params.id) },
+        function(err, result) {
+            if (err) {
+                console.log(err);
+                return res.sendStatus(500);
+            }
+            res.sendStatus(200);
+        }
+    )
 
-    res.sendStatus(200);
+    // users = users.filter(function(user){
+    //     return user.id !== Number(req.params.id);
+    // })
+    // res.sendStatus(200);
 })
 
-MongoClient.connect('mongodb://localhost:27017', function(err, database){
+db.connect('mongodb://localhost:27017', function(err){
     if (err) {
         return console.log(err);
     }
-    db = database.db('dbCount');
     app.listen(3012, function() {
         console.log('API app started');
     });
