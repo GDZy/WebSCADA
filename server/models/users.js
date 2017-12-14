@@ -1,5 +1,5 @@
 var ObjectID = require('mongodb').ObjectID;
-var db = require('../../db');
+var db = require('../db');
 
 exports.all = function ( callback ) {
     db.get().collection('users').find().toArray( function (err, docs) {
